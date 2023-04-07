@@ -9,7 +9,8 @@ def process_frame(frame):
     mask = mask.astype(frame.dtype)
     result = frame * mask
     return result
-
+    
+    
 def refine_mask(mask):
     refined_mask = np.copy(mask)
     height, width = mask.shape
@@ -17,13 +18,23 @@ def refine_mask(mask):
     for y in range(height):
         for x in range(width):
             if mask[y, x] == 0:
-                min_y, max_y = max(0, y - 7), min(height, y + 8)
-                min_x, max_x = max(0, x - 7), min(width, x + 8)
-                matrix = mask[min_y:max_y, min_x:max_x]
-                if np.sum(matrix == 0) == 1:  # Only the center pixel is black
+                min_y_up, max_y_down = max(0, y - 50), min(height, y + 51)
+                min_x_left, max_x_right = max(0, x - 50), min(width, x + 51)
+
+                up_slice = mask[min_y_up:y, x]
+                down_slice = mask[y + 1:max_y_down, x]
+                left_slice = mask[y, min_x_left:x]
+                right_slice = mask[y, x + 1:max_x_right]
+
+                # Check if there's a colored pixel in each direction
+                if np.sum(up_slice != 0) > 0 and np.sum(down_slice != 0) > 0 and np.sum(left_slice != 0) > 0 and np.sum(right_slice != 0) > 0:
+                    min_y, max_y = max(0, y - 1), min(height, y + 2)
+                    min_x, max_x = max(0, x - 1), min(width, x + 2)
+                    matrix = mask[min_y:max_y, min_x:max_x]
                     refined_mask[y, x] = np.mean(matrix)
 
     return refined_mask
+
 
 def create_panorama(video_path, num_frames=30):
     cap = cv2.VideoCapture(video_path)
