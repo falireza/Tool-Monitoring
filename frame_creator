@@ -1,0 +1,33 @@
+import cv2
+import os
+
+def extract_frames(video_path, output_path, duration=10):
+    video = cv2.VideoCapture(video_path)
+    fps = int(video.get(cv2.CAP_PROP_FPS))
+    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    frames_to_extract = fps * duration
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    frame_offset = 0
+    while frame_offset < total_frames:
+        for i in range(frames_to_extract):
+            frame_index = (frame_offset + i) % total_frames
+            video.set(cv2.CAP_PROP_POS_FRAMES, frame_index)
+            ret, frame = video.read()
+
+            if ret:
+                output_filename = os.path.join(output_path, f"frame_{frame_offset}_{i}.png")
+                cv2.imwrite(output_filename, frame)
+            else:
+                break
+        frame_offset += 4
+
+    video.release()
+
+if __name__ == "__main__":
+    video_path = r"C:\Users\...\IMG_3438.MOV"
+    output_path = r"C:\Users\...\output video"
+    extract_frames(video_path, output_path)
