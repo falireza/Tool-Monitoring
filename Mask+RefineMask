@@ -36,8 +36,8 @@ def refine_mask(mask):
     for y in range(height):
         for x in range(width):
             if mask[y, x] == 0:
-                min_y_up, max_y_down = max(0, y - 50), min(height, y + 51)
-                min_x_left, max_x_right = max(0, x - 50), min(width, x + 51)
+                min_y_up, max_y_down = max(0, y - 25), min(height, y + 26)
+                min_x_left, max_x_right = max(0, x - 25), min(width, x + 26)
 
                 up_slice = mask[min_y_up:y, x]
                 down_slice = mask[y + 1:max_y_down, x]
@@ -45,8 +45,8 @@ def refine_mask(mask):
                 right_slice = mask[y, x + 1:max_x_right]
 
                 if np.sum(up_slice != 0) > 0 and np.sum(down_slice != 0) > 0 and np.sum(left_slice != 0) > 0 and np.sum(right_slice != 0) > 0:
-                    min_y, max_y = max(0, y - 50), min(height, y + 51)
-                    min_x, max_x = max(0, x - 50), min(width, x + 51)
+                    min_y, max_y = max(0, y - 25), min(height, y + 26)
+                    min_x, max_x = max(0, x - 25), min(width, x + 26)
                     matrix = mask[min_y:max_y, min_x:max_x]
 
                     refined_mask[y, x] = get_nearest_pixel(matrix)
