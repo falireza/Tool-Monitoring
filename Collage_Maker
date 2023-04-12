@@ -1,25 +1,17 @@
-import cv2
-import numpy as np
-
-def apply_mask_and_refine(frame, mask_function, refine_function):
-    frame = mask_function(frame)
-    frame = refine_function(frame)
-    return frame
-
-def create_collage(frames):
-    collage = np.hstack(frames)
-    return collage
-
 def main():
-    video_path = 'path/to/your/video.mp4'
-    output_dir = 'path/to/output/directory/'
+    video_path = '/content/IMG_3619.MOV'
+    output_dir = 'output/'
     step = 17
     num_frames_in_collage = 7
 
+    # Ensure the output directory exists
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        
     cap = cv2.VideoCapture(video_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    for starting_frame in range(0, step):
+    for starting_frame in range(0, total_frames):
         frames = []
         i = starting_frame
         remaining_steps = step
@@ -33,7 +25,7 @@ def main():
                 cap.set(cv2.CAP_PROP_POS_FRAMES, i)
                 ret, frame = cap.read()
 
-            frame = apply_mask_and_refine(frame, mask_function, refine_function)
+            frame = mask_function(frame)
             frames.append(frame)
 
             i += step
@@ -43,17 +35,10 @@ def main():
                 collage = create_collage(frames)
                 output_path = f'{output_dir}collage_{starting_frame}.png'
                 cv2.imwrite(output_path, collage)
-                frames.pop(0)
 
     cap.release()
 
-def mask_function(frame):
-    # Implement your mask function here
-    pass
 
-def refine_function(frame):
-    # Implement your refine function here
-    pass
 
 if __name__ == "__main__":
     main()
